@@ -1,0 +1,6 @@
+Build-date: 2020-05-28
+NOOBS Version: v3.4
+NOOBS Git HEAD @ 134417fba944a44c3a1b1de42c290d8bdfd0c6f5
+rpi-userland Git master @ 06bc6daa02137ca72b7a2104afad81e82a44de17
+rpi-firmware Git master @ 149cd7f0487e08e148efe604f8d4d359541cecf4
+rpi-linux Git rpi-4.14.y @ f16e91dad2af9d57aef477cc1f522040353849f5
