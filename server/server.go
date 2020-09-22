@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 
@@ -26,36 +25,49 @@ type MainBox struct {
 	Item []Item `json:"file"`
 }
 type Item struct {
-	Size  int64  `json:"size"`
-	Name  string `json:"name"`
-	IsDir bool   `json:"isdir"`
+	Size     int64  `json:"size"`
+	Name     string `json:"name"`
+	IsDir    bool   `json:"isdir"`
+	FullPath string `json:"full_path"`
 }
 
 func ls(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("p")
+	nmw := ""
 	if name == "" {
 		name = "./file"
 	} else {
 		if string(name[0]) != "/" {
+			nmw = name
 			name = "./file/" + name
 		} else {
+			nmw = name
 			name = "./file" + name
 		}
 	}
 	go fmt.Println(name)
 	files, err := ioutil.ReadDir(name)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		fmt.Fprint(w, err)
 	}
 	ItemList := []Item{}
 	box := MainBox{ItemList}
+	run := []rune(nmw)
+	slash := "/"
+	if string(run[len(run)-1:]) == "/" {
+		slash = ""
 
+	}
 	for _, f := range files {
+
 		go fmt.Println(f.Name())
+		//runes := []rune(f.Name())
 		box.AddItem(Item{
-			Size:  f.Size(),
-			Name:  f.Name(),
-			IsDir: f.IsDir(),
+			Size:     f.Size(),
+			Name:     f.Name(),
+			IsDir:    f.IsDir(),
+			FullPath: nmw + slash + f.Name(),
 		})
 	}
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -66,10 +78,20 @@ func ls(w http.ResponseWriter, r *http.Request) {
 }
 func Status(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("p")
+	if name == "" {
+		name = "./file"
+	} else {
+		if string(name[0]) != "/" {
+			name = "./file/" + name
+		} else {
+			name = "./file" + name
+		}
+	}
+	fmt.Println(name)
 	file, err := os.Open(name)
 	if err != nil {
-		// здесь перехватывается ошибка
-		return
+		fmt.Println(err)
+		fmt.Fprint(w, err)
 	}
 	defer file.Close()
 
@@ -86,9 +108,11 @@ func Status(w http.ResponseWriter, r *http.Request) {
 		size = 0
 		fmt.Println(size)
 	}
+	runes := []rune(name)
+
 	d := &Data{
 		Size:   size,
-		Name:   name,
+		Name:   string(runes[7:]),
 		Status: check,
 	}
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -109,3 +133,5 @@ func main() {
 	fmt.Println("Server is listening...")
 	http.ListenAndServe(":9999", nil)
 }
+
+//dd
