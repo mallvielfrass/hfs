@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./hfs"
+	"github.com/mallvielfrass/hfs/client/hfs"
 )
 
 func printP() {
